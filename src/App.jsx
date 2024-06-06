@@ -1,35 +1,81 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { createContext, useState } from 'react'
+import Todos from './components/Todo'
+import TodoForm from './components/TodoForm'
+
+export const TodoContext = createContext()
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [todos, setTodos] = useState([
+    {
+      id: 1,
+      title: 'Finish Progate React Course',
+      completed: false,
+    },
+    {
+      id: 2,
+      title: 'Have lunch with Guru Domba',
+      completed: false,
+    },
+    {
+      id: 3,
+      title: 'Study React with Ninja Ken',
+      completed: false,
+    },
+  ])
+
+  const toggleCompleted = (todoId) => {
+    const updatedTodos = todos.map((todo) => {
+      if (todo.id === todoId) {
+        todo.completed = !todo.completed
+      }
+      return todo
+    })
+    setTodos(updatedTodos)
+  }
+
+  const deleteTodo = (todoId) => {
+    const updatedTodos = todos.filter((todo) => {
+      return todo.id !== todoId
+    })
+    setTodos(updatedTodos)
+  }
+
+  const addTodo = (todoTitle) => {
+    if (todoTitle === '') {
+      return
+    }
+
+    const newTodo = {
+      id: todos.length + 1,
+      title: todoTitle,
+      completed: false,
+    }
+
+    const updatedTodos = todos.concat(newTodo)
+    setTodos(updatedTodos)
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <TodoContext.Provider value={{ toggleCompleted, deleteTodo }}>
+      <div style={styles.container}>
+        <h1 style={styles.title}>My Todo List</h1>
+        <TodoForm addTodo={addTodo} />
+        <Todos 
+          todos={todos} 
+        />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </TodoContext.Provider>
   )
+}
+
+const styles = {
+  container: {
+    textAlign: 'center',
+    padding: '12px',
+  },
+  title: {
+    fontSize: '36px',
+  },
 }
 
 export default App
